@@ -9,7 +9,7 @@ from sklearn import preprocessing
 from sklearn import metrics
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.model_selection import KFold
 import pickle
 
@@ -17,12 +17,13 @@ from util import lithology_key
 
 SEED = 31415
 N_FOLDS = 5
+LR = 0.1
+N_ESTIMATORS = 50
 
-Pkl_path = 'checkpoints/RDF1.pkl' 
+Pkl_path = 'checkpoints/ADA1.pkl' 
 
 train_dataset = pd.read_csv('data/Train-dataset.csv')
 test_dataset = pd.read_csv('data/Test-dataset.csv')
-
 
 # Feature Extraction
 MAPPING = {
@@ -45,7 +46,7 @@ if os.path.exists(Pkl_path):
     with open(Pkl_path, 'rb') as file: 
         models = pickle.load(file)
     print("Loaded model")
-    
+
 else:
     # Training
     kf = KFold(n_splits=N_FOLDS, shuffle=True, random_state=SEED)
@@ -56,28 +57,30 @@ else:
         X_train, X_val = X[train_index], X[val_index]
         y_train, y_val = y[train_index], y[val_index]
 
-        model = RandomForestClassifier(random_state=SEED)
+        # model = RandomForestClassifier(random_state=SEED)
+        model = AdaBoostClassifier(n_estimators=N_ESTIMATORS, learning_rate=LR, random_state=SEED)
         model.fit(X_train, y_train)
         yhat = model.predict(X_val)
 
         models.append(model)
         f1[i] = metrics.f1_score(y_val, yhat, average='micro')
 
+    print(f1)
     # Save the model to file in the current working directory
     with open(Pkl_path, 'wb') as file:  
         pickle.dump(models, file)
 
 # Inferrence
-yhats = []
-for model in models:
+yhats = np.zeros((len(X), N_FOLDS))
+
+for i, model in enumerate(models):
     yhat = model.predict(X)
-    yhats.append(yhats)
+    yhats[:, i] = yhat
 
-yhats = np.array(yhats)
-for i in range(yhats.size[1]):
-    counts = Counter(yhats[:,i])
-    print(counts.most_common(1))
-    final_yhat = [counts.most_common(1)] 
+final_yhat = []
+for i in range(yhats.shape[0]):
+    counts = Counter(yhats[:][i])
+    final_yhat.append(counts.most_common(1)[0][0])
 
-# f1[i] = metrics.f1_score(y, yhat, average='micro')
-
+f1 = metrics.f1_score(y, final_yhat, average='micro')
+print(f1)
