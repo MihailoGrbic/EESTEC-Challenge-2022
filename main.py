@@ -61,12 +61,12 @@ if LOAD_MODEL:
 
 else:
     # Training
-    kf = GroupKFold(n_splits=N_FOLDS, random_state=SEED)
+    kf = GroupKFold(n_splits=N_FOLDS)
     groups = train_dataset['WELL']
-    print(groups)
+    groups = groups.replace(['Well-1', 'Well-2', 'Well-3'], 'Well-4')
 
     f1 = np.zeros((N_FOLDS))
-    for i, (train_index, val_index) in enumerate(kf.split(X)):
+    for i, (train_index, val_index) in enumerate(kf.split(X, groups=groups)):
         
         X_train, X_val = X[train_index], X[val_index]
         y_train, y_val = y[train_index], y[val_index]
@@ -85,20 +85,20 @@ else:
     with open(Pkl_path, 'wb') as file:  
         pickle.dump(models, file)
 
-# Inferrence
-X_val = val_dataset[['MD','GR', 'RT', 'DEN', 'CN','DEPOSITIONAL_ENVIRONMENT']]
-X_val = preprocessing.StandardScaler().fit(X_val).transform(X_val)
-y_val = val_dataset['LITH_CODE']
-yhats = np.zeros((len(X_val), N_FOLDS))
+# # Inferrence
+# X_test = test_dataset[['MD','GR', 'RT', 'DEN', 'CN','DEPOSITIONAL_ENVIRONMENT']]
+# X_test = preprocessing.StandardScaler().fit(X_test).transform(X_test)
+# y_test = test_dataset['LITH_CODE']
+# yhats = np.zeros((len(X_test), N_FOLDS))
 
-for i, model in enumerate(models):
-    yhat = model.predict(X_val)
-    yhats[:, i] = yhat
+# for i, model in enumerate(models):
+#     yhat = model.predict(X_test)
+#     yhats[:, i] = yhat
 
-final_yhat = []
-for i in range(yhats.shape[0]):
-    counts = Counter(yhats[:][i])
-    final_yhat.append(counts.most_common(1)[0][0])
+# final_yhat = []
+# for i in range(yhats.shape[0]):
+#     counts = Counter(yhats[:][i])
+#     final_yhat.append(counts.most_common(1)[0][0])
 
-f1 = metrics.f1_score(y_val, final_yhat, average='micro')
-print(f1)
+# f1 = metrics.f1_score(y_test, final_yhat, average='micro')
+# print(f1)
