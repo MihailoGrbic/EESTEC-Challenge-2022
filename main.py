@@ -93,20 +93,23 @@ else:
     with open(Pkl_path, 'wb') as file:  
         pickle.dump(models, file)
 
-# # Inferrence
+# Inferrence
 # X_test = test_dataset[['MD','GR', 'RT', 'DEN', 'CN','DEPOSITIONAL_ENVIRONMENT']]
 # X_test = preprocessing.StandardScaler().fit(X_test).transform(X_test)
 # y_test = test_dataset['LITH_CODE']
-# yhats = np.zeros((len(X_test), N_FOLDS))
 
-# for i, model in enumerate(models):
-#     yhat = model.predict(X_test)
-#     yhats[:, i] = yhat
+X_test = X
+y_test = y
+yhats = np.zeros((len(X_test), N_FOLDS))
 
-# final_yhat = []
-# for i in range(yhats.shape[0]):
-#     counts = Counter(yhats[:][i])
-#     final_yhat.append(counts.most_common(1)[0][0])
+for i, model in enumerate(models):
+    yhat = model.predict(X_test)
+    yhats[:, i] = yhat
 
-# f1 = metrics.f1_score(y_test, final_yhat, average='micro')
-# print(f1)
+final_yhat = []
+for i in range(yhats.shape[0]):
+    counts = Counter(yhats[:][i])
+    final_yhat.append(counts.most_common(1)[0][0])
+
+f1 = metrics.f1_score(y_test, final_yhat, average='micro')
+print(f1)
