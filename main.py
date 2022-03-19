@@ -35,7 +35,6 @@ MAPPING = {
     'Marine': 3,
 }
 
-<<<<<<< Updated upstream
 train_dataset = pd.read_csv('data/Train-dataset.csv')
 
 X = train_dataset[['MD','GR', 'RT', 'DEN', 'CN','DEPOSITIONAL_ENVIRONMENT']]
@@ -49,12 +48,6 @@ X['DEPOSITIONAL_ENVIRONMENT']=X['DEPOSITIONAL_ENVIRONMENT'].apply(lambda x: MAPP
 # X = pd.get_dummies(X, columns=['DEPOSITIONAL_ENVIRONMENT'])
 
 X = X.to_numpy()
-=======
-
-
-X = train_dataset[['MD','GR', 'RT', 'DEN', 'CN','D_Env']]
-X = preprocessing.StandardScaler().fit(X).transform(X)
->>>>>>> Stashed changes
 
 y = train_dataset['LITH_CODE']
 
@@ -93,7 +86,7 @@ else:
         pickle.dump(models, file)
 
 # Inferrence
-X_val = val_dataset[['MD','GR', 'RT', 'DEN', 'CN','D_Env']]
+X_val = val_dataset[['MD','GR', 'RT', 'DEN', 'CN','DEPOSITIONAL_ENVIRONMENT']]
 X_val = preprocessing.StandardScaler().fit(X_val).transform(X_val)
 y_val = val_dataset['LITH_CODE']
 yhats = np.zeros((len(X_val), N_FOLDS))
