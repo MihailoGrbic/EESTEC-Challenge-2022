@@ -10,18 +10,20 @@ from sklearn.compose import ColumnTransformer
 from sklearn import metrics
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.model_selection import KFold
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, ExtraTreesClassifier
+from sklearn.model_selection import KFold, GroupKFold
 import pickle
 
 from util import lithology_key
 
 SEED = 31415
-N_FOLDS = 5
-LR = 0.1
-N_ESTIMATORS = 50
+N_FOLDS = 8
 
-Pkl_path = 'checkpoints/ADA1.pkl' 
+LR = 0.05
+N_ESTIMATORS = 50
+LOAD_MODEL = False
+
+Pkl_path = 'checkpoints/RDF1.pkl' 
 
 train_dataset = pd.read_csv('data/Train-dataset.csv')
 test_dataset = pd.read_csv('data/Test-dataset.csv')
@@ -33,6 +35,7 @@ MAPPING = {
     'Marine': 3,
 }
 
+<<<<<<< Updated upstream
 train_dataset = pd.read_csv('data/Train-dataset.csv')
 
 X = train_dataset[['MD','GR', 'RT', 'DEN', 'CN','DEPOSITIONAL_ENVIRONMENT']]
@@ -46,21 +49,28 @@ X['DEPOSITIONAL_ENVIRONMENT']=X['DEPOSITIONAL_ENVIRONMENT'].apply(lambda x: MAPP
 # X = pd.get_dummies(X, columns=['DEPOSITIONAL_ENVIRONMENT'])
 
 X = X.to_numpy()
+=======
+
+
+X = train_dataset[['MD','GR', 'RT', 'DEN', 'CN','D_Env']]
+X = preprocessing.StandardScaler().fit(X).transform(X)
+>>>>>>> Stashed changes
 
 y = train_dataset['LITH_CODE']
-
 
 models = []
 
 # Load model if it exists
-if os.path.exists(Pkl_path):
+if LOAD_MODEL:
     with open(Pkl_path, 'rb') as file: 
         models = pickle.load(file)
     print("Loaded model")
 
 else:
     # Training
-    kf = KFold(n_splits=N_FOLDS, shuffle=True, random_state=SEED)
+    kf = GroupKFold(n_splits=N_FOLDS, random_state=SEED)
+    groups = train_dataset['WELL']
+    print(groups)
 
     f1 = np.zeros((N_FOLDS))
     for i, (train_index, val_index) in enumerate(kf.split(X)):
@@ -68,8 +78,9 @@ else:
         X_train, X_val = X[train_index], X[val_index]
         y_train, y_val = y[train_index], y[val_index]
 
-        # model = RandomForestClassifier(random_state=SEED)
-        model = AdaBoostClassifier(n_estimators=N_ESTIMATORS, learning_rate=LR, random_state=SEED)
+        model = ExtraTreesClassifier(n_estimators=500, min_samples_split=10, random_state=SEED, max_features='log2')
+        #model = AdaBoostClassifier(n_estimators=N_ESTIMATORS, learning_rate=LR, random_state=SEED)
+
         model.fit(X_train, y_train)
         yhat = model.predict(X_val)
 
@@ -82,10 +93,13 @@ else:
         pickle.dump(models, file)
 
 # Inferrence
-yhats = np.zeros((len(X), N_FOLDS))
+X_val = val_dataset[['MD','GR', 'RT', 'DEN', 'CN','D_Env']]
+X_val = preprocessing.StandardScaler().fit(X_val).transform(X_val)
+y_val = val_dataset['LITH_CODE']
+yhats = np.zeros((len(X_val), N_FOLDS))
 
 for i, model in enumerate(models):
-    yhat = model.predict(X)
+    yhat = model.predict(X_val)
     yhats[:, i] = yhat
 
 final_yhat = []
@@ -93,5 +107,5 @@ for i in range(yhats.shape[0]):
     counts = Counter(yhats[:][i])
     final_yhat.append(counts.most_common(1)[0][0])
 
-f1 = metrics.f1_score(y, final_yhat, average='micro')
+f1 = metrics.f1_score(y_val, final_yhat, average='micro')
 print(f1)
