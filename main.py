@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
+from sklearn.compose import ColumnTransformer
 from sklearn import metrics
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
@@ -16,8 +17,6 @@ from util import lithology_key
 SEED = 31415
 N_FOLDS = 5
 
-train_dataset = pd.read_csv('data/Train-dataset.csv')
-
 # Feature Extraction
 MAPPING = {
     'Continental': 1,
@@ -25,10 +24,19 @@ MAPPING = {
     'Marine': 3,
 }
 
-train_dataset['D_Env']=train_dataset['DEPOSITIONAL_ENVIRONMENT'].apply(lambda x: MAPPING[x])
+train_dataset = pd.read_csv('data/Train-dataset.csv')
 
-X = train_dataset[['MD','GR', 'RT', 'DEN', 'CN','D_Env']]
-X = preprocessing.StandardScaler().fit(X).transform(X)
+X = train_dataset[['MD','GR', 'RT', 'DEN', 'CN','DEPOSITIONAL_ENVIRONMENT']]
+ct = ColumnTransformer([
+        ('some_name', preprocessing.StandardScaler(), ['MD','GR', 'RT', 'DEN', 'CN'])], remainder='passthrough')
+X = pd.DataFrame(ct.fit_transform(X), columns=X.columns)
+
+# Mapping encorder
+X['DEPOSITIONAL_ENVIRONMENT']=X['DEPOSITIONAL_ENVIRONMENT'].apply(lambda x: MAPPING[x])
+# One hot encoder
+# X = pd.get_dummies(X, columns=['DEPOSITIONAL_ENVIRONMENT'])
+
+X = X.to_numpy()
 
 y = train_dataset['LITH_CODE']
 
