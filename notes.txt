@@ -29,15 +29,103 @@ Well-Z  10149 (1718.2, 703.4)
 [0.70272441 0.82301124 0.76258438 0.96157244 0.78544423]
 Bayesian without XY optimal is 57 102
 
-[0.60357077 0.61339326 0.60289296 0.55477032 0.60964083] ada XY n_estimators=100, learning_rate=0.1
-[0.62204238 0.68395506 0.51918997 0.65702297 0.67013233] ada XY n_estimators=200, learning_rate=0.01
+[['Well-10'], ['Well-11'], ['Well-7'], ['Well-6'], ['Well-8']]
+ada
+[0.60357077 0.61339326 0.60289296 0.55477032 0.60964083] XY n_estimators=100, learning_rate=0.1
+[0.62204238 0.68395506 0.51918997 0.65702297 0.67013233] XY n_estimators=200, learning_rate=0.01
+[0.72146694 0.60930942 0.58609027 0.7896861  0.77228682] n_estimators=200, learning_rate=0.3
+[0.72902712 0.54006105 0.57298383 0.75672646 0.76841085] n_estimators=400, learning_rate=0.3
+[0.7483918  0.77975963 0.750872   0.77847534 0.76744186] n_estimators=400, learning_rate=0.3, max_depth=5
+[0.80204258 0.74694773 0.7472783  0.77556054 0.78972868] n_estimators=400, learning_rate=0.1, max_depth=5
 
 [0.58639649 0.7694382  0.76779171 0.53423145 0.66162571] gb XY n_estimators=100, learning_rate=0.1, subsample = 1.0, min_samples_split=5
 
+
+
+rdf
+[0.6943226  0.79757303 0.76846673 0.71908127 0.72400756] XY n_estimators=102, min_samples_split=57
+[0.70272441 0.82301124 0.76258438 0.96157244 0.78544423] submited n_estimators=102, min_samples_split=57
+[0.76271636 0.86341091 0.83426699 0.96457399 0.79457364] removed 6 n_estimators=102, min_samples_split=57
+
+GB
+removed 6
+[0.73585782 0.83384205 0.83807209 0.96950673 0.80329457] n_estimators=100, learning_rate=0.1, subsample = 1.0, min_samples_split=5 
+[0.80920485 0.83775277 0.83870627 0.96726457 0.78488372] n_estimators=100, learning_rate=0.1, subsample = 0.9, min_samples_split=50
+[0.88838782 0.82993132 0.83532396 0.95695067 0.80232558] n_estimators=100, learning_rate=0.2, subsample = 0.9, min_samples_split=50,
+[0.88726043 0.84128195 0.84156009 0.95538117 0.81007752] *n_estimators=100, learning_rate=0.3, subsample = 0.9, min_samples_split=50,
+[0.86955368 0.82945441 0.83722651 0.95       0.80426357] n_estimators=100, learning_rate=0.4, subsample = 0.9, min_samples_split=50,
+[0.88633198 0.83326974 0.83828348 0.94865471 0.80426357] n_estimators=100, learning_rate=0.3, subsample = 0.8, min_samples_split=50,
+[0.87353273 0.84261732 0.83881196 0.96008969 0.79166667] n_estimators=200, learning_rate=0.1, subsample = 0.9, min_samples_split=50,
+[0.85735128 0.83660816 0.83680372 0.96098655 0.79748062] n_estimators=200, learning_rate=0.1, subsample = 0.6, min_samples_split=50, 
+[0.85735128 0.83842045 0.83955184 0.95784753 0.7994186 ] n_estimators=200, learning_rate=0.1, subsample = 0.8, min_samples_split=50,
+[0.76676172 0.84433422 0.83099038 0.96793722 0.75872093] ???n_estimators=100, learning_rate=0.03, subsample = 0.72, min_samples_split=68,
+bayesian says ('learning_rate', 0.030433241300959552), ('min_samples_split', 68), ('subsample', 0.7214244940229698)]
+
+XGB
+[0.75641621 0.84938955 0.84050312 0.95403587 0.82073643] n_estimators=100, learning_rate=0.3, min_samples_split=50
+[0.7068108  0.84194964 0.83944615 0.96053812 0.81879845] n_estimators=100, learning_rate=0.3, max_depth=3
+[0.73751575 0.85158337 0.84060882 0.95246637 0.83236434] n_estimators=100, learning_rate=0.3, max_depth=5
+[0.75641621 0.84938955 0.84050312 0.95403587 0.82073643] n_estimators=100, learning_rate=0.3, max_depth=6, reg_lambda=1
+[0.74739704 0.84805418 0.84187718 0.95560538 0.8246124 ] n_estimators=100, learning_rate=0.3, max_depth=6, reg_lambda=3
+[0.75774256 0.85501717 0.8411373  0.95336323 0.81007752] n_estimators=100, learning_rate=0.3, max_depth=6, reg_lambda=10
+[0.74812653 0.8553987  0.83997463 0.94932735 0.81104651] n_estimators=100, learning_rate=0.3, max_depth=6, reg_lambda=100
+[0.71569733 0.8496757  0.83426699 0.95695067 0.8129845 ] n_estimators=100, learning_rate=0.3, max_depth=6, reg_lambda=1000
+[0.75336561 0.84090042 0.83923475 0.96008969 0.8120155 ] n_estimators=100, learning_rate=0.1, max_depth=6, reg_lambda=10
+[0.7582731  0.83422358 0.83447838 0.97174888 0.7877907 ] n_estimators=50, learning_rate=0.1, max_depth=6, reg_lambda=10
+
 MLP
+[0.81046488 0.83174361 0.81989219 0.92690583 0.74321705] 
+[0.77624511 0.82630675 0.77941021 0.90627803 0.77713178] hidden_layer_sizes=(20, 50, 20), alpha=0.0001, learning_rate_init=0.001, early_stopping=True
+[0.74222429 0.8352728  0.81989219 0.93565022 0.77228682] hidden_layer_sizes=(50, 100, 100, 50), alpha=0.0001, learning_rate_init=0.001, early_stopping=True,
+[0.69772531 0.84557421 0.8193637  0.88161435 0.80620155] hidden_layer_sizes=(50, 100, 200, 100, 50), alpha=0.0001, learning_rate_init=0.001, early_stopping=True, 
+[0.70727502 0.83069439 0.82359159 0.91008969 0.79360465] hidden_layer_sizes=(100, 200, 200, 100), alpha=0.0001, learning_rate_init=0.001, early_stopping=True, 
+[0.79395185 0.83346051 0.81397315 0.90358744 0.82364341] hidden_layer_sizes=(100, 200, 100), alpha=0.0001, learning_rate_init=0.001, early_stopping=True,
 
-[['Well-10'], ['Well-11'], ['Well-7'], ['Well-6'], ['Well-8']]
+Tree
+[0.75575303 0.79864556 0.82412007 0.90695067 0.77422481] min_samples_split=100
+[0.74355063 0.78004578 0.82739668 0.90381166 0.76550388] min_samples_split=50
+[0.73605677 0.76812285 0.82581123 0.90022422 0.80717054] min_samples_split=2
+[0.6706015  0.79311332 0.82972202 0.92713004 0.78391473] min_samples_split=100
 
-[0.6943226  0.79757303 0.76846673 0.71908127 0.72400756]
-[0.70272441 0.82301124 0.76258438 0.96157244 0.78544423]
+VC rdf+gb
+[0.88699516 0.86484166 0.8375436  0.97578475 0.78585271] 
+rdf = RandomForestClassifier(n_estimators=102, min_samples_split=57, random_state=SEED)
+gb = GradientBoostingClassifier(n_estimators=100, learning_rate=0.3, subsample = 0.9, min_samples_split=50, random_state=SEED)
 
+VC rdf+gb+xgb
+[0.78221367 0.85291873 0.84134869 0.96345291 0.81007752]
+RandomForestClassifier(n_estimators=102, min_samples_split=57, random_state=SEED)
+GradientBoostingClassifier(n_estimators=100, learning_rate=0.3, subsample = 0.9, min_samples_split=50, random_state=SEED)
+XGBClassifier(n_estimators=100, learning_rate=0.3, max_depth=6, reg_lambda=3, random_state=SEED, 
+                n_jobs=4, gpu_id=0, verbosity=0)
+
+SC rdf+gb
+[0.87585384 0.74389546 0.76979178 0.9455157  0.82364341]
+rdf = RandomForestClassifier(n_estimators=102, min_samples_split=57, random_state=SEED)
+gb = GradientBoostingClassifier(n_estimators=100, learning_rate=0.3, subsample = 0.9, min_samples_split=50, random_state=SEED)
+
+SC rdf+gb+mlp
+[0.86849261 0.73779092 0.7618645  0.94529148 0.83430233]
+rdf = RandomForestClassifier(n_estimators=102, min_samples_split=57, random_state=SEED)
+gb = GradientBoostingClassifier(n_estimators=100, learning_rate=0.3, subsample = 0.9, min_samples_split=50, random_state=SEED)
+mlp = MLPClassifier(hidden_layer_sizes=(100, 200, 100), max_iter=1000, alpha=0.0001, learning_rate='adaptive', 
+                    learning_rate_init=0.001, early_stopping=True, random_state=SEED)
+
+Logistic reg
+[0.79846144 0.75715376 0.72592749 0.78946188 0.83817829]
+
+VC rdf+gb+mlp
+[0.8356655  0.86627242 0.8376493  0.96502242 0.81589147]
+rdf = RandomForestClassifier(n_estimators=102, min_samples_split=57, random_state=SEED)
+gb = GradientBoostingClassifier(n_estimators=100, learning_rate=0.3, subsample = 0.9, min_samples_split=50, random_state=SEED)
+mlp = MLPClassifier(hidden_layer_sizes=(100, 200, 100), max_iter=1000, alpha=0.0001, learning_rate='adaptive', 
+                            learning_rate_init=0.001, early_stopping=True, random_state=SEED)
+
+
+
+new features
+[0.97456461 0.98062067 0.97997102 0.96377857 0.96867085] i=2
+[0.83659394 0.82249142 0.83648663 0.94461883 0.81395349]
+
+[0.97240241 0.97978823 0.97784576 0.96214222 0.96775909]
+[0.88726043 0.84128195 0.84156009 0.95538117 0.81007752] i=0

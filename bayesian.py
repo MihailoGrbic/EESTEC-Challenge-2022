@@ -39,7 +39,8 @@ def rdf_exhaust(X, y, groups):
     kfold_generator = GroupKFold(n_splits=params["n_folds"])
 
     model = RandomForestClassifier(random_state=params["seed"], n_jobs=4)
-
+    model = GradientBoostingClassifier(random_state=params["seed"], n_jobs=4)
+    
     distribution = {
         "min_samples_split": Integer(2, 100, "uniform"),
         "n_estimators": Integer(100, 500, "uniform")
@@ -117,8 +118,10 @@ def xgboost_exhaust(X, y, groups):
     model = GradientBoostingClassifier(learning_rate=0.1, random_state=params["seed"])
 
     distribution = {
+        #"n_estimators": Real(50, 300, "uniform"),
         "learning_rate": Real(1e-2, 1, "log-uniform"),
-        "subsample": Real(0.5, 1.0, "uniform")
+        "subsample": Real(0.5, 1.0, "uniform"),
+        "min_samples_split": Integer(2, 100, "uniform"),
     }
     optimizer = BayesSearchCV(model,
                               distribution,
@@ -194,8 +197,8 @@ if __name__ == "__main__":
 
     train_dataset = train_dataset.loc[train_dataset["WELL"].isin(["Well-6", "Well-7", "Well-8", "Well-10", "Well-11"])]
 
-    # X = train_dataset[["MD", "GR", "RT", "DEN", "CN", "DENV"]]
-    X = train_dataset[["MD", "GR", "RT", "DEN", "CN"]]
+    X = train_dataset[["MD", "GR", "RT", "DEN", "CN", "DENV"]]
+    #X = train_dataset[["MD", "GR", "RT", "DEN", "CN"]]
     X = preprocessing.StandardScaler().fit_transform(X)
     groups = train_dataset["WELL"]
 
@@ -204,5 +207,5 @@ if __name__ == "__main__":
 
     # rdf_exhaust(X, y, groups)
     # ada_exhaust(X, y, groups)
-    # xgboost_exhaust(X, y, groups)
-    mlp_exhaust(X, y, groups)
+    xgboost_exhaust(X, y, groups)
+    # mlp_exhaust(X, y, groups)
