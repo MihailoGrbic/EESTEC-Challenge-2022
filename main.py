@@ -42,24 +42,24 @@ train_dataset = remove_classes(train_dataset)
 
 train_dataset = train_dataset.reset_index()
 
-train_dataset = add_features(train_dataset)
-test_dataset = add_features(test_dataset)
+# train_dataset = add_features(train_dataset)
+# test_dataset = add_features(test_dataset)
 
 # print(train_dataset['WELL'].unique())
 # print(train_dataset['LITH_NAME'].unique())
 
 train_dataset = train_dataset.reset_index()
 
-X = train_dataset[['MD','GR','RT','DEN','CN','GR_+1', 'GR_-1', 'CN_+1', 'CN_-1', 'DEPOSITIONAL_ENVIRONMENT']]
-X_test = test_dataset[['MD','GR','RT','DEN','CN','GR_+1', 'GR_-1', 'CN_+1', 'CN_-1', 'DEPOSITIONAL_ENVIRONMENT']]
-# X = train_dataset[['MD','GR','RT','DEN','CN', 'DEPOSITIONAL_ENVIRONMENT']]
-# X_test = test_dataset[['MD','GR','RT','DEN','CN', 'DEPOSITIONAL_ENVIRONMENT']]
-ct = ColumnTransformer([
-        ('some_name', preprocessing.StandardScaler(), ['MD','GR', 'RT', 'DEN', 'CN', 'GR_+1', 'GR_-1', 'CN_+1', 'CN_-1'])], 
-        remainder='passthrough')
+# X = train_dataset[['MD','GR','RT','DEN','CN','GR_+1', 'GR_-1', 'CN_+1', 'CN_-1', 'DEPOSITIONAL_ENVIRONMENT']]
+# X_test = test_dataset[['MD','GR','RT','DEN','CN','GR_+1', 'GR_-1', 'CN_+1', 'CN_-1', 'DEPOSITIONAL_ENVIRONMENT']]
+X = train_dataset[['MD','GR','RT','DEN','CN', 'DEPOSITIONAL_ENVIRONMENT']]
+X_test = test_dataset[['MD','GR','RT','DEN','CN', 'DEPOSITIONAL_ENVIRONMENT']]
 # ct = ColumnTransformer([
-#         ('some_name', preprocessing.StandardScaler(), ['MD','GR', 'RT', 'DEN', 'CN'])], 
+#         ('some_name', preprocessing.StandardScaler(), ['MD','GR', 'RT', 'DEN', 'CN', 'GR_+1', 'GR_-1', 'CN_+1', 'CN_-1'])], 
 #         remainder='passthrough')
+ct = ColumnTransformer([
+        ('some_name', preprocessing.StandardScaler(), ['MD','GR', 'RT', 'DEN', 'CN'])], 
+        remainder='passthrough')
 
 ct.fit(X)
 X = pd.DataFrame(ct.transform(X), columns=X.columns)
@@ -85,7 +85,7 @@ else:
     # Training
     kf = GroupKFold(n_splits=N_FOLDS)
     groups = train_dataset['WELL']
-    groups = groups.replace(['Well-1', 'Well-2', 'Well-3'], 'Well-4')
+    groups = groups.replace(['Well-1', 'Well-2', 'Well-3', 'Well-4'], 'Well-5')
 
     f1_train = np.zeros((N_FOLDS))
     f1_val = np.zeros((N_FOLDS))
@@ -102,12 +102,14 @@ else:
         #                 n_jobs=4, gpu_id=0, verbosity=0)
         # mlp = MLPClassifier(hidden_layer_sizes=(100, 200, 100), max_iter=1000, alpha=0.0001, learning_rate='adaptive', 
         #                     learning_rate_init=0.001, early_stopping=True, random_state=SEED)
-        # model = VotingClassifier(estimators=[('rdf', rdf), ('gb', gb)], n_jobs=4)
+        # # model = VotingClassifier(estimators=[('rdf', rdf), ('gb', gb)], n_jobs=4)
+        # final_estimator=GradientBoostingClassifier(n_estimators=100, learning_rate=0.3, subsample = 0.9, min_samples_split=50, random_state=SEED)
         # model = StackingClassifier(estimators=[('rdf', rdf), ('gb', gb), ('mlp', mlp)], 
-        #                         passthrough=True, n_jobs=4)
+        #                         final_estimator=final_estimator,passthrough=True, n_jobs=4)
 
-        # tree_for_ada = DecisionTreeClassifier(max_depth=5)
-        # model = AdaBoostClassifier(base_estimator=tree_for_ada, n_estimators=400, learning_rate=0.1, random_state=SEED)
+        # model = AdaBoostClassifier(n_estimators=100,  learning_rate=0.1, random_state=SEED)
+        # model = AdaBoostClassifier(base_estimator=DecisionTreeClassifier(max_depth=5), n_estimators=100, 
+        # learning_rate=0.1, random_state=SEED)
         # model = RandomForestClassifier(n_estimators=102, min_samples_split=57, random_state=SEED)
         model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.3, subsample = 0.9, min_samples_split=50, 
                                             random_state=SEED)
@@ -142,33 +144,33 @@ else:
         pickle.dump(models, file)
         
 
-# # Testing
-# yhats = np.zeros((len(X), N_FOLDS))
+# Testing
+yhats = np.zeros((len(X), N_FOLDS))
 
-# for i, model in enumerate(models):
-#     yhat = model.predict(X)
-#     yhats[:, i] = yhat
-
-# final_yhat = []
-# for i in range(yhats.shape[0]):
-#     counts = Counter(yhats[:][i])
-#     final_yhat.append(counts.most_common(1)[0][0])
-
-# f1 = metrics.f1_score(y, final_yhat, average='micro')
-# print(f1)
-
-
-# Inferrence
-yhats_test = np.zeros((len(X_test), N_FOLDS))
 for i, model in enumerate(models):
-    yhat = model.predict(X_test)
-    yhats_test[:, i] = yhat
+    yhat = model.predict(X)
+    yhats[:, i] = yhat
 
-final_test_yhat = []
-for i in range(yhats_test.shape[0]):
-    counts = Counter(yhats_test[:][i])
-    final_test_yhat.append(int(counts.most_common(1)[0][0]))
+final_yhat = []
+for i in range(yhats.shape[0]):
+    counts = Counter(yhats[:][i])
+    final_yhat.append(counts.most_common(1)[0][0])
 
-test_dataset['LITH_CODE'] = final_test_yhat
-submission = test_dataset[['Id','LITH_CODE']]
-submission.to_csv('submission.csv', index=False)
+f1 = metrics.f1_score(y, final_yhat, average='micro')
+print(f1)
+
+
+# # Inferrence
+# yhats_test = np.zeros((len(X_test), N_FOLDS))
+# for i, model in enumerate(models):
+#     yhat = model.predict(X_test)
+#     yhats_test[:, i] = yhat
+
+# final_test_yhat = []
+# for i in range(yhats_test.shape[0]):
+#     counts = Counter(yhats_test[:][i])
+#     final_test_yhat.append(int(counts.most_common(1)[0][0]))
+
+# test_dataset['LITH_CODE'] = final_test_yhat
+# submission = test_dataset[['Id','LITH_CODE']]
+# submission.to_csv('submission.csv', index=False)
